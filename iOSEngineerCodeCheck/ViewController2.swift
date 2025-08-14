@@ -10,16 +10,16 @@ import UIKit
 
 class ViewController2: UIViewController {
     
-    @IBOutlet weak var ImgView: UIImageView!
+    @IBOutlet weak var avatarImageView: UIImageView!
     
-    @IBOutlet weak var TtlLbl: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
     
-    @IBOutlet weak var LangLbl: UILabel!
+    @IBOutlet weak var languageLabel: UILabel!
     
-    @IBOutlet weak var StrsLbl: UILabel!
-    @IBOutlet weak var WchsLbl: UILabel!
-    @IBOutlet weak var FrksLbl: UILabel!
-    @IBOutlet weak var IsssLbl: UILabel!
+    @IBOutlet weak var starsCountLabel: UILabel!
+    @IBOutlet weak var wacherCountLabel: UILabel!
+    @IBOutlet weak var forcksCountLabel: UILabel!
+    @IBOutlet weak var issuesCountLabel: UILabel!
     
     var vc1: ViewController!
         
@@ -28,18 +28,18 @@ class ViewController2: UIViewController {
         
         let repo = vc1.repo[vc1.idx]
         
-        LangLbl.text = "Written in \(repo["language"] as? String ?? "")"
-        StrsLbl.text = "\(repo["stargazers_count"] as? Int ?? 0) stars"
-        WchsLbl.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
-        FrksLbl.text = "\(repo["forks_count"] as? Int ?? 0) forks"
-        IsssLbl.text = "\(repo["open_issues_count"] as? Int ?? 0) open issues"
+        languageLabel.text = "Written in \(repo["language"] as? String ?? "")"
+        starsCountLabel.text = "\(repo["stargazers_count"] as? Int ?? 0) stars"
+        wacherCountLabel.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
+        forcksCountLabel.text = "\(repo["forks_count"] as? Int ?? 0) forks"
+        issuesCountLabel.text = "\(repo["open_issues_count"] as? Int ?? 0) open issues"
         getImage()
         
     }
     
     func getImage() {
         let repo = vc1.repo[vc1.idx]
-        TtlLbl.text = repo["full_name"] as? String
+        titleLabel.text = repo["full_name"] as? String
 
         // オプショナルバインディングで安全にオーナー情報と画像URLを取得
         guard let owner = repo["owner"] as? [String: Any],
@@ -58,7 +58,7 @@ class ViewController2: UIViewController {
 
             // メインスレッドで画像を表示
             DispatchQueue.main.async {
-                self.ImgView.image = img
+                self.avatarImageView.image = img
             }
         }.resume()
     }
