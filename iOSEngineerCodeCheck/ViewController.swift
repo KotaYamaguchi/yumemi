@@ -10,20 +10,20 @@ import UIKit
 
 class ViewController: UITableViewController, UISearchBarDelegate {
 
-    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var repositorySearchBar: UISearchBar!
     
-    var repo: [[String: Any]]=[]
+    var repositories: [[String: Any]]=[]
     
-    var task: URLSessionTask?
-    var word: String!
-    var url: String!
-    var idx: Int!
+    var searchTask: URLSessionTask?
+    var searchText: String!
+    var requestURLString: String!
+    var pathIndex: Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        searchBar.text = "GitHubのリポジトリを検索できるよー"
-        searchBar.delegate = self
+        repositorySearchBar.text = "GitHubのリポジトリを検索できるよー"
+        repositorySearchBar.delegate = self
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
@@ -33,7 +33,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        task?.cancel()
+        searchTask?.cancel()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -43,7 +43,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         }
 
         // 既存の通信タスクをキャンセル
-        task?.cancel()
+        searchTask?.cancel()
 
         // APIリクエスト用のURLを生成
         let urlString = "https://api.github.com/search/repositories?q=\(word)"
@@ -52,7 +52,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         }
 
         // URLSessionを使ってAPIリクエストを実行
-        task = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
+        searchTask = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
             // 通信が完了し、データが取得できなかった場合や、selfが解放済みの場合は処理を中断
             guard let self = self, let data = data else {
                 return
@@ -67,7 +67,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
 
                 // メインスレッドでUIを更新
                 DispatchQueue.main.async {
-                    self.repo = items
+                    self.repositories = items
                     self.tableView.reloadData()
                 }
             } catch {
@@ -78,7 +78,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         }
         
         // 定義したタスクを開始
-        task?.resume()
+        searchTask?.resume()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -91,13 +91,13 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repo.count
+        return repositories.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = UITableViewCell()
-        let rp = repo[indexPath.row]
+        let rp = repositories[indexPath.row]
         cell.textLabel?.text = rp["full_name"] as? String ?? ""
         cell.detailTextLabel?.text = rp["language"] as? String ?? ""
         cell.tag = indexPath.row
@@ -107,7 +107,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 画面遷移時に呼ばれる
-        idx = indexPath.row
+        pathIndex = indexPath.row
         performSegue(withIdentifier: "Detail", sender: self)
         
     }

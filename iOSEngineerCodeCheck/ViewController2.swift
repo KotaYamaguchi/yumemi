@@ -26,23 +26,23 @@ class ViewController2: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let repo = vc1.repo[vc1.idx]
+        let repositories = vc1.repositories[vc1.pathIndex]
         
-        languageLabel.text = "Written in \(repo["language"] as? String ?? "")"
-        starsCountLabel.text = "\(repo["stargazers_count"] as? Int ?? 0) stars"
-        wacherCountLabel.text = "\(repo["wachers_count"] as? Int ?? 0) watchers"
-        forcksCountLabel.text = "\(repo["forks_count"] as? Int ?? 0) forks"
-        issuesCountLabel.text = "\(repo["open_issues_count"] as? Int ?? 0) open issues"
+        languageLabel.text = "Written in \(repositories["language"] as? String ?? "")"
+        starsCountLabel.text = "\(repositories["stargazers_count"] as? Int ?? 0) stars"
+        wacherCountLabel.text = "\(repositories["wachers_count"] as? Int ?? 0) watchers"
+        forcksCountLabel.text = "\(repositories["forks_count"] as? Int ?? 0) forks"
+        issuesCountLabel.text = "\(repositories["open_issues_count"] as? Int ?? 0) open issues"
         getImage()
         
     }
     
     func getImage() {
-        let repo = vc1.repo[vc1.idx]
-        titleLabel.text = repo["full_name"] as? String
+        let repositories = vc1.repositories[vc1.pathIndex]
+        titleLabel.text = repositories["full_name"] as? String
 
         // オプショナルバインディングで安全にオーナー情報と画像URLを取得
-        guard let owner = repo["owner"] as? [String: Any],
+        guard let owner = repositories["owner"] as? [String: Any],
               let imgURLString = owner["avatar_url"] as? String,
               let imgURL = URL(string: imgURLString) else {
             // いずれかの取得に失敗した場合、以降の処理を中断
