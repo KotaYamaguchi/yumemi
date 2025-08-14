@@ -37,23 +37,30 @@ class ViewController2: UIViewController {
         
     }
     
-    func getImage(){
-        
+    func getImage() {
         let repo = vc1.repo[vc1.idx]
-        
         TtlLbl.text = repo["full_name"] as? String
-        
-        if let owner = repo["owner"] as? [String: Any] {
-            if let imgURL = owner["avatar_url"] as? String {
-                URLSession.shared.dataTask(with: URL(string: imgURL)!) { (data, res, err) in
-                    let img = UIImage(data: data!)!
-                    DispatchQueue.main.async {
-                        self.ImgView.image = img
-                    }
-                }.resume()
-            }
+
+        // オプショナルバインディングで安全にオーナー情報と画像URLを取得
+        guard let owner = repo["owner"] as? [String: Any],
+              let imgURLString = owner["avatar_url"] as? String,
+              let imgURL = URL(string: imgURLString) else {
+            // いずれかの取得に失敗した場合、以降の処理を中断
+            return
         }
-        
+
+        // URLSessionを使って画像を非同期でダウンロード
+        URLSession.shared.dataTask(with: imgURL) { [weak self] (data, res, err) in
+            // selfが解放済みの場合や、エラーがある場合、データがない場合は処理を中断
+            guard let self = self, err == nil, let data = data, let img = UIImage(data: data) else {
+                return
+            }
+
+            // メインスレッドで画像を表示
+            DispatchQueue.main.async {
+                self.ImgView.image = img
+            }
+        }.resume()
     }
     
 }
