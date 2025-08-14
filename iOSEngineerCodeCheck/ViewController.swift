@@ -37,25 +37,48 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        word = searchBar.text!
-        
-        if word.count != 0 {
-            url = "https://api.github.com/search/repositories?q=\(word!)"
-            task = URLSession.shared.dataTask(with: URL(string: url)!) { (data, res, err) in
-                if let obj = try! JSONSerialization.jsonObject(with: data!) as? [String: Any] {
-                    if let items = obj["items"] as? [[String: Any]] {
-                    self.repo = items
-                        DispatchQueue.main.async {
-                            self.tableView.reloadData()
-                        }
-                    }
-                }
+        // 検索キーワードを取得し、入力がない場合は早期リターン
+        guard let word = searchBar.text, !word.isEmpty else {
+            return
+        }
+
+        // 既存の通信タスクをキャンセル
+        task?.cancel()
+
+        // APIリクエスト用のURLを生成
+        let urlString = "https://api.github.com/search/repositories?q=\(word)"
+        guard let url = URL(string: urlString) else {
+            return // URLが無効な場合は処理を中断
+        }
+
+        // URLSessionを使ってAPIリクエストを実行
+        task = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
+            // 通信が完了し、データが取得できなかった場合や、selfが解放済みの場合は処理を中断
+            guard let self = self, let data = data else {
+                return
             }
-        // これ呼ばなきゃリストが更新されません
-        task?.resume()
+
+            do {
+                // JSONデータをパースし、リポジトリのリストを抽出
+                guard let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let items = obj["items"] as? [[String: Any]] else {
+                    return // JSONの形式が期待と異なる場合は処理を中断
+                }
+
+                // メインスレッドでUIを更新
+                DispatchQueue.main.async {
+                    self.repo = items
+                    self.tableView.reloadData()
+                }
+            } catch {
+                // JSONパース中にエラーが発生した場合
+                print("JSON parsing error: \(error.localizedDescription)")
+                // エラー処理をここに記述することも可能
+            }
         }
         
+        // 定義したタスクを開始
+        task?.resume()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
