@@ -27,7 +27,7 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        // ↓こうすれば初期のテキストを消せる
+        // 検索開始前にプレースホルダーを削除
         searchBar.text = ""
         return true
     }
@@ -106,7 +106,6 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // 画面遷移時に呼ばれる
         pathIndex = indexPath.row
         performSegue(withIdentifier: "Detail", sender: self)
         
