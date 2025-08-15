@@ -13,9 +13,9 @@ class RootViewController: UITableViewController, UISearchBarDelegate {
     
     var repositories: [[String: Any]]=[]
     var searchTask: URLSessionTask?
-    var searchText: String!
-    var requestURLString: String!
-    var pathIndex: Int!
+    var searchText: String?
+    var requestURLString: String?
+    var pathIndex: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,8 +48,12 @@ class RootViewController: UITableViewController, UISearchBarDelegate {
         }
         // URLSessionを使ってAPIリクエストを実行
         searchTask = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
-            // 通信が完了し、データが取得できなかった場合や、selfが解放済みの場合は処理を中断
-            guard let self = self, let data = data else {
+            guard let self = self else{ return }
+            if let error = err{
+                print("Error fetching data: \(error.localizedDescription)")
+            }
+            guard let data = data else {
+                print("No data received")
                 return
             }
             do {
@@ -75,8 +79,10 @@ class RootViewController: UITableViewController, UISearchBarDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Detail"{
-            let dtl = segue.destination as! DetailViewController
-            dtl.vc1 = self
+            guard let dtl = segue.destination as? DetailViewController else {
+                return
+            }
+            dtl.rootViewController = self
         }
         
     }
