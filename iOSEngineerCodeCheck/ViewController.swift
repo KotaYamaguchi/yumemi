@@ -9,11 +9,9 @@
 import UIKit
 
 class ViewController: UITableViewController, UISearchBarDelegate {
-    
     @IBOutlet weak var repositorySearchBar: UISearchBar!
     
     var repositories: [[String: Any]]=[]
-    
     var searchTask: URLSessionTask?
     var searchText: String!
     var requestURLString: String!
@@ -41,30 +39,25 @@ class ViewController: UITableViewController, UISearchBarDelegate {
         guard let word = searchBar.text, !word.isEmpty else {
             return
         }
-        
         // 既存の通信タスクをキャンセル
         searchTask?.cancel()
-        
         // APIリクエスト用のURLを生成
         let urlString = "https://api.github.com/search/repositories?q=\(word)"
         guard let url = URL(string: urlString) else {
             return // URLが無効な場合は処理を中断
         }
-        
         // URLSessionを使ってAPIリクエストを実行
         searchTask = URLSession.shared.dataTask(with: url) { [weak self] (data, res, err) in
             // 通信が完了し、データが取得できなかった場合や、selfが解放済みの場合は処理を中断
             guard let self = self, let data = data else {
                 return
             }
-            
             do {
                 // JSONデータをパースし、リポジトリのリストを抽出
                 guard let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                       let items = obj["items"] as? [[String: Any]] else {
                     return // JSONの形式が期待と異なる場合は処理を中断
                 }
-                
                 // メインスレッドでUIを更新
                 DispatchQueue.main.async {
                     self.repositories = items
@@ -76,13 +69,11 @@ class ViewController: UITableViewController, UISearchBarDelegate {
                 // エラー処理をここに記述することも可能
             }
         }
-        
         // 定義したタスクを開始
         searchTask?.resume()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
         if segue.identifier == "Detail"{
             let dtl = segue.destination as! ViewController2
             dtl.vc1 = self
@@ -95,7 +86,6 @@ class ViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = UITableViewCell()
         let rp = repositories[indexPath.row]
         cell.textLabel?.text = rp["full_name"] as? String ?? ""
