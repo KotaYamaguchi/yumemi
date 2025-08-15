@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController2: UIViewController {
+class DetailViewController: UIViewController {
     
     @IBOutlet weak var avatarImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
@@ -18,7 +18,7 @@ class ViewController2: UIViewController {
     @IBOutlet weak var forksCountLabel: UILabel!
     @IBOutlet weak var issuesCountLabel: UILabel!
     
-    var vc1: ViewController!
+    var vc1: RootViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
