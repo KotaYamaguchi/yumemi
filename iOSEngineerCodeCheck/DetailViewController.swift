@@ -61,10 +61,17 @@ class DetailViewController: UIViewController {
         }
         // URLSessionを使って画像を非同期でダウンロード
         URLSession.shared.dataTask(with: imgURL) { [weak self] (data, res, err) in
-            // selfが解放済みの場合や、エラーがある場合、データがない場合は処理を中断
-            guard let self = self, err == nil, let data = data, let img = UIImage(data: data) else {
-                return
-            }
+            guard let self = self else { return } // selfの存在を確認
+
+               if let error = err {
+                   print("an error occurred while fetching image: \(error.localizedDescription)")
+                   return
+               }
+
+               guard let data = data, let img = UIImage(data: data) else {
+                   print("failed to convert data to image")
+                   return
+               }
             // メインスレッドで画像を表示
             DispatchQueue.main.async {
                 self.avatarImageView.image = img
