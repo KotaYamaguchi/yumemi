@@ -61,7 +61,6 @@ struct DetailView: View {
                     .font(.title.weight(.semibold))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
                 
                 // Language Badge
                 if let language = repository.language {
