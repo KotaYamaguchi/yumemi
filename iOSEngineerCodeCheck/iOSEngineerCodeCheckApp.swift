@@ -1,5 +1,5 @@
 //
-//  RootView.swift
+//  iOSEngineerCodeCheckApp.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by Kota Yamaguchi on 2025/08/16.
@@ -8,12 +8,12 @@
 
 import SwiftUI
 
-struct RootView: View {
+struct iOSEngineerCodeCheckApp: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    RootView()
+    iOSEngineerCodeCheckApp()
 }
