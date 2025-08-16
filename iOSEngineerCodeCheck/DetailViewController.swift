@@ -1,5 +1,5 @@
 //
-//  ViewController2.swift
+//  DetailViewController.swift
 //  iOSEngineerCodeCheck
 //
 //  Created by 史 翔新 on 2020/04/21.
@@ -18,65 +18,39 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var forksCountLabel: UILabel!
     @IBOutlet weak var issuesCountLabel: UILabel!
     
-    var rootViewController: RootViewController?
+    // 表示に必要なデータだけを保持する
+    var repository: Repository?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let rootViewController = rootViewController,
-              let pathIndex = rootViewController.pathIndex,
-              pathIndex >= 0,
-              pathIndex < rootViewController.repositories.count else {
-            return // rootViewControllerがnilの場合は処理を中断
-        }
-        let repositories = rootViewController.repositories[pathIndex]
         
-        languageLabel.text = "Written in \(repositories["language"] as? String ?? "")"
-        starsCountLabel.text = "\(repositories["stargazers_count"] as? Int ?? 0) stars"
-        watcherCountLabel.text = "\(repositories["watchers_count"] as? Int ?? 0) watchers"
-        forksCountLabel.text = "\(repositories["forks_count"] as? Int ?? 0) forks"
-        issuesCountLabel.text = "\(repositories["open_issues_count"] as? Int ?? 0) open issues"
-        getImage()
+        guard let repo = repository else { return }
         
+        // 受け取ったデータをUIに設定
+        titleLabel.text = repo.fullName
+        languageLabel.text = "Written in \(repo.language ?? "N/A")"
+        starsCountLabel.text = "\(repo.stargazersCount) stars"
+        watcherCountLabel.text = "\(repo.watchersCount) watchers"
+        forksCountLabel.text = "\(repo.forksCount) forks"
+        issuesCountLabel.text = "\(repo.openIssuesCount) open issues"
+        
+        loadImage(from: repo.owner.avatarURL)
     }
     
-    func getImage() {
-        guard let rootViewController = rootViewController,
-              let pathIndex = rootViewController.pathIndex,
-              pathIndex >= 0,
-              pathIndex < rootViewController.repositories.count else {
-            return
-        }
-        let repositories = rootViewController.repositories[pathIndex]
-        guard let title = repositories["full_name"] as? String else {
-            return // full_nameがnilの場合は処理を中断
-        }
+    private func loadImage(from urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        URLSession.shared.dataTask(with: url) { [weak self] (data, _, error) in
+            if let error = error {
+                print("Image download error: \(error.localizedDescription)")
+                return
+            }
             
-        titleLabel.text = title
-        // オプショナルバインディングで安全にオーナー情報と画像URLを取得
-        guard let owner = repositories["owner"] as? [String: Any],
-              let imgURLString = owner["avatar_url"] as? String,
-              let imgURL = URL(string: imgURLString) else {
-            // いずれかの取得に失敗した場合、以降の処理を中断
-            return
-        }
-        // URLSessionを使って画像を非同期でダウンロード
-        URLSession.shared.dataTask(with: imgURL) { [weak self] (data, res, err) in
-            guard let self = self else { return } // selfの存在を確認
-
-               if let error = err {
-                   print("an error occurred while fetching image: \(error.localizedDescription)")
-                   return
-               }
-
-               guard let data = data, let img = UIImage(data: data) else {
-                   print("failed to convert data to image")
-                   return
-               }
-            // メインスレッドで画像を表示
+            guard let data = data, let image = UIImage(data: data) else { return }
+            
             DispatchQueue.main.async {
-                self.avatarImageView.image = img
+                self?.avatarImageView.image = image
             }
         }.resume()
     }
-    
 }
