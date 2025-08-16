@@ -6,14 +6,15 @@
 //  Copyright © 2025 YUMEMI Inc. All rights reserved.
 //
 
+// iOSEngineerCodeCheckApp.swift
+
 import SwiftUI
 
-struct iOSEngineerCodeCheckApp: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+@main
+struct iOSEngineerCodeCheckApp: App {
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+        }
     }
-}
-
-#Preview {
-    iOSEngineerCodeCheckApp()
 }

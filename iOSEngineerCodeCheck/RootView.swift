@@ -9,8 +9,27 @@
 import SwiftUI
 
 struct RootView: View {
+    @StateObject var rootViewModel = RootViewModel()
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack{
+            List {
+                // ForEachはListの機能と統合できる
+                ForEach(rootViewModel.repositories) { repository in
+                    // NavigationLinkに遷移先とデータを正しく設定
+                    NavigationLink(destination: DetailView(repository: repository)) {
+                        VStack(alignment: .leading) {
+                            Text(repository.fullName)
+                                .font(.headline)
+                            Text(repository.language ?? "N/A")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            .searchable(text: $rootViewModel.searchText, prompt: Text("GitHubのリポジトリを検索できるよー"))
+            .navigationTitle("GitHubリポジトリ検索")
+        }
     }
 }
 
