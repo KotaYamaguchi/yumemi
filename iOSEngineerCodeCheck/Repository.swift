@@ -14,7 +14,8 @@ struct SearchResponse: Codable {
 }
 
 // リポジトリのデータを保持する構造体
-struct Repository: Codable {
+struct Repository: Codable, Identifiable {
+    let id: Int
     let fullName: String
     let language: String?
     let stargazersCount: Int
@@ -23,8 +24,9 @@ struct Repository: Codable {
     let openIssuesCount: Int
     let owner: Owner
 
-    // JSONのsnake_caseキーをSwiftのcamelCaseにマッピング
+    // JSONのキー(snake_case)をSwiftのプロパティ(camelCase)にマッピングする
     enum CodingKeys: String, CodingKey {
+        case id
         case fullName = "full_name"
         case language
         case stargazersCount = "stargazers_count"
@@ -34,7 +36,6 @@ struct Repository: Codable {
         case owner
     }
 }
-
 // オーナー情報（アバター画像URL）を保持する構造体
 struct Owner: Codable {
     let avatarURL: String
